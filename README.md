@@ -11,19 +11,64 @@
 - Stable version of [Docker](https://docs.docker.com/engine/install/)
 - Compatible version of [Docker Compose](https://docs.docker.com/compose/install/#install-compose)
 
-# How To Deploy
+## How To Deploy
 
 ### For first time only !
 - `git clone https://github.com/giezele/Laravel-sail-example.git`
-- `cd laravel-sail-example`
-- `docker compose up -d --build`
-- `docker compose exec shell bash`
-- `chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache`
-- `chmod -R 775 /var/www/storage /var/www/bootstrap/cache`
-- `composer setup`
+- `cd Laravel-sail-example`
+- Next configure your Laravel services by running:
+```shell
+php artisan sail:install
+```
 
-### From the second time onwards
-- `docker compose up -d`
+## Local Development
+
+This project uses Laravel Sail for local development which uses [Docker](https://www.docker.com/get-started). You will
+need to ensure that you have Docker installed and running on your machine.
+
+### First time setup
+
+1. Copy the example environment file:
+```shell
+cp .env.example .env
+```
+
+2. Install Composer dependencies:
+```shell
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v $(pwd):/opt \
+    -w /opt \
+    laravelsail/php82-composer:latest \
+    composer install --ignore-platform-reqs
+```
+
+3. Run the following commands:
+```shell
+./vendor/bin/sail up -d
+./vendor/bin/sail artisan key:generate
+./vendor/bin/sail artisan migrate
+./vendor/bin/sail artisan db:seed
+./vendor/bin/sail shell
+chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+```
+
+4. The API should now be available at [http://localhost](http://localhost).
+
+### Stopping the project
+
+1. To stop the project docker containers, simply run the following command:
+```shell
+./vendor/bin/sail down
+```
+
+### Starting the project again
+
+1. To start the project docker containers after you've completed the first time use, simply run the following command:
+```shell
+./vendor/bin/sail up -d
+```
 
 # Notes
 
